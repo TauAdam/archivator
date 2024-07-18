@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
@@ -23,12 +24,22 @@ func init() {
 }
 
 func pack(_ *cobra.Command, args []string) {
+	if len(args) == 0 {
+		handleError(errors.New("no file provided"))
+	}
+
 	pathToFile := args[0]
 
 	f, err := os.Open(pathToFile)
 	if err != nil {
 		handleError(err)
 	}
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			handleError(err)
+		}
+	}(f)
 	data, err := io.ReadAll(f)
 	if err != nil {
 		handleError(err)
