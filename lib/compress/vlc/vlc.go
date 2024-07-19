@@ -1,24 +1,78 @@
 package vlc
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
 )
 
 type encodingTable = map[rune]string
-type BinaryChunks []string
+type BinaryChunk string
+
+func (c BinaryChunk) ToHex() HexChunk {
+	num, err := strconv.ParseUint(string(c), 2, chunkSize)
+	if err != nil {
+		panic("failed to convert binary to int" + err.Error())
+	}
+
+	res := strings.ToUpper(fmt.Sprintf("%X", num))
+
+	if len(res) == 1 {
+		res = "0" + res
+	}
+	return HexChunk(res)
+}
+
+type BinaryChunks []BinaryChunk
+
+func (c BinaryChunks) ToHex() HexChunks {
+	res := make(HexChunks, 0, len(c))
+
+	for _, chunk := range c {
+		hexChunk := chunk.ToHex()
+		res = append(res, hexChunk)
+	}
+
+	return res
+}
+
+type HexChunk string
+type HexChunks []HexChunk
+
+func (c HexChunks) ToString() string {
+	const separator = " "
+
+	switch len(c) {
+	case 0:
+		return ""
+	case 1:
+		return string(c[0])
+	}
+	var buf strings.Builder
+
+	for i, chunk := range c {
+		buf.WriteString(string(chunk))
+		if i < len(c)-1 {
+			buf.WriteString(separator)
+		}
+	}
+	return buf.String()
+}
 
 const chunkSize = 8
 
+// Encode encodes the input string to VLC
+// Where all the magic happens
 func Encode(str string) string {
 	_ = prepareText(str)
 
 	binStr := EncodeToBinary(str)
 
-	// TODO: split by chunks
-	_ = splitByChunks(binStr, chunkSize)
-	return ""
+	chunks := splitByChunks(binStr, chunkSize)
+
+	return chunks.ToHex().ToString()
 }
 
 // prepareText removes all upper case characters from the input string
@@ -72,7 +126,7 @@ func splitByChunks(binStr string, chunkSize int) BinaryChunks {
 	for i, char := range binStr {
 		buf.WriteString(string(char))
 		if (i+1)%chunkSize == 0 {
-			res = append(res, buf.String())
+			res = append(res, BinaryChunk(buf.String()))
 			buf.Reset()
 		}
 	}
@@ -80,7 +134,7 @@ func splitByChunks(binStr string, chunkSize int) BinaryChunks {
 	if buf.Len() != 0 {
 		lastChunk := buf.String()
 		lastChunk += strings.Repeat("0", chunkSize-len(lastChunk))
-		res = append(res, lastChunk)
+		res = append(res, BinaryChunk(lastChunk))
 	}
 	return res
 }
