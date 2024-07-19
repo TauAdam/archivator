@@ -37,8 +37,26 @@ func (c BinaryChunks) ToHex() HexChunks {
 
 	return res
 }
+func (c BinaryChunks) Join() string {
+	var buf strings.Builder
+	for _, chunk := range c {
+		buf.WriteString(string(chunk))
+	}
+	return buf.String()
+
+}
 
 type HexChunk string
+
+func (c HexChunk) ToBinary() BinaryChunk {
+	num, err := strconv.ParseUint(string(c), 16, chunkSize)
+	if err != nil {
+		panic("failed to convert hex to int" + err.Error())
+	}
+
+	return BinaryChunk(fmt.Sprintf("%08b", num))
+}
+
 type HexChunks []HexChunk
 
 func (c HexChunks) ToString() string {
@@ -57,6 +75,18 @@ func (c HexChunks) ToString() string {
 		}
 	}
 	return buf.String()
+}
+
+// ToBinary converts HexChunks to BinaryChunks
+func (c HexChunks) ToBinary() BinaryChunks {
+	res := make(BinaryChunks, 0, len(c))
+
+	for _, chunk := range c {
+		binaryChunk := chunk.ToBinary()
+		res = append(res, binaryChunk)
+	}
+
+	return res
 }
 
 // splitByChunks splits the input string by chunks of given size
