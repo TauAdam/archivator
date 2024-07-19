@@ -71,7 +71,7 @@ func splitByChunks(binStr string, chunkSize int) BinaryChunks {
 
 	for i, char := range binStr {
 		buf.WriteString(string(char))
-		if chunkSize == i+1 {
+		if (i+1)%chunkSize == 0 {
 			res = append(res, buf.String())
 			buf.Reset()
 		}
