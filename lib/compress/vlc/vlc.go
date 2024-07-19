@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-type encodingTable = map[rune]string
+type encodingTable map[rune]string
 
 const chunkSize = 8
 
