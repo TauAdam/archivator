@@ -66,9 +66,9 @@ const chunkSize = 8
 // Encode encodes the input string to VLC
 // Where all the magic happens
 func Encode(str string) string {
-	_ = prepareText(str)
+	text := prepareText(str)
 
-	binStr := EncodeToBinary(str)
+	binStr := EncodeToBinary(text)
 
 	chunks := splitByChunks(binStr, chunkSize)
 
@@ -78,9 +78,10 @@ func Encode(str string) string {
 // prepareText removes all upper case characters from the input string
 // and converts it to lowercase(uppercase letters to `! + lower case letter`.
 // i.g.: "Hello, World!" -> "!hello, world!"
-func prepareText(text string) string {
+func prepareText(str string) string {
 	var buf strings.Builder
-	for _, char := range text {
+
+	for _, char := range str {
 		if unicode.IsUpper(char) {
 			buf.WriteRune('!')
 			buf.WriteRune(unicode.ToLower(char))

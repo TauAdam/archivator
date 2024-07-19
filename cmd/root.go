@@ -18,7 +18,7 @@ func Execute() {
 
 func handleError(err error) {
 	if err != nil {
-		_ = fmt.Errorf("Error: %v", err)
+		_ = fmt.Errorf("error: %v", err)
 		os.Exit(1)
 	}
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/TauAdam/archivator/lib/compress/vlc"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
@@ -44,8 +45,7 @@ func pack(_ *cobra.Command, args []string) {
 	if err != nil {
 		handleError(err)
 	}
-	// TODO: Implement variable length encoding
-	packed := string(data)
+	packed := vlc.Encode(string(data))
 
 	err = os.WriteFile(packFileName(pathToFile), []byte(packed), 0666)
 	if err != nil {
