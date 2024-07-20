@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/TauAdam/archivator/lib/compress"
 	"github.com/TauAdam/archivator/lib/compress/vlc"
 	"github.com/spf13/cobra"
 	"io"
@@ -18,15 +19,27 @@ var unpackCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(unpackCmd)
+	unpackCmd.Flags().StringP("algorithm", "a", "", "decompression algorithm")
+	if err := unpackCmd.MarkFlagRequired("algorithm"); err != nil {
+		panic(err)
+	}
 }
 
-func unpack(_ *cobra.Command, args []string) {
+func unpack(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		handleError(errors.New("no file provided"))
 	}
 
-	pathToFile := args[0]
+	var decoder compress.Decoder
+	algo := cmd.Flag("algorithm").Value.String()
+	switch algo {
+	case "vlc":
+		decoder = vlc.New()
+	default:
+		cmd.PrintErr("unsupported algorithm")
+	}
 
+	pathToFile := args[0]
 	f, err := os.Open(pathToFile)
 	if err != nil {
 		handleError(err)
@@ -41,7 +54,7 @@ func unpack(_ *cobra.Command, args []string) {
 	if err != nil {
 		handleError(err)
 	}
-	packed := vlc.Decode(data)
+	packed := decoder.Decode(data)
 
 	err = os.WriteFile(unpackFileName(pathToFile), []byte(packed), 0666)
 	if err != nil {
