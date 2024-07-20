@@ -7,36 +7,18 @@ import (
 	"unicode/utf8"
 )
 
-const hexChunkSeparator = " "
-
 type BinaryChunk string
 
-func (c BinaryChunk) ToHex() HexChunk {
+func (c BinaryChunk) Byte() byte {
 	num, err := strconv.ParseUint(string(c), 2, chunkSize)
 	if err != nil {
-		panic("failed to convert binary to int" + err.Error())
+		panic("Error converting binary to byte" + err.Error())
 	}
-
-	res := strings.ToUpper(fmt.Sprintf("%X", num))
-
-	if len(res) == 1 {
-		res = "0" + res
-	}
-	return HexChunk(res)
+	return byte(num)
 }
 
 type BinaryChunks []BinaryChunk
 
-func (c BinaryChunks) ToHex() HexChunks {
-	res := make(HexChunks, 0, len(c))
-
-	for _, chunk := range c {
-		hexChunk := chunk.ToHex()
-		res = append(res, hexChunk)
-	}
-
-	return res
-}
 func (c BinaryChunks) Join() string {
 	var buf strings.Builder
 	for _, chunk := range c {
@@ -46,46 +28,12 @@ func (c BinaryChunks) Join() string {
 
 }
 
-type HexChunk string
-
-func (c HexChunk) ToBinary() BinaryChunk {
-	num, err := strconv.ParseUint(string(c), 16, chunkSize)
-	if err != nil {
-		panic("failed to convert hex to int" + err.Error())
-	}
-
-	return BinaryChunk(fmt.Sprintf("%08b", num))
-}
-
-type HexChunks []HexChunk
-
-func (c HexChunks) ToString() string {
-	switch len(c) {
-	case 0:
-		return ""
-	case 1:
-		return string(c[0])
-	}
-	var buf strings.Builder
-
-	for i, chunk := range c {
-		buf.WriteString(string(chunk))
-		if i < len(c)-1 {
-			buf.WriteString(hexChunkSeparator)
-		}
-	}
-	return buf.String()
-}
-
-// ToBinary converts HexChunks to BinaryChunks
-func (c HexChunks) ToBinary() BinaryChunks {
-	res := make(BinaryChunks, 0, len(c))
-
+func (c BinaryChunks) Bytes() []byte {
+	res := make([]byte, 0, len(c))
 	for _, chunk := range c {
-		binaryChunk := chunk.ToBinary()
-		res = append(res, binaryChunk)
-	}
+		res = append(res, chunk.Byte())
 
+	}
 	return res
 }
 
@@ -119,13 +67,16 @@ func splitByChunks(binStr string, chunkSize int) BinaryChunks {
 	return res
 }
 
-func NewHexChunks(str string) HexChunks {
-	chunks := strings.Split(str, hexChunkSeparator)
-	res := make(HexChunks, 0, len(chunks))
+func NewBinChunks(data []byte) BinaryChunks {
+	res := make(BinaryChunks, 0, len(data))
 
-	for _, chunk := range chunks {
-		res = append(res, HexChunk(chunk))
+	for _, code := range data {
+		res = append(res, NewBinChunk(code))
 	}
 
 	return res
+}
+
+func NewBinChunk(code byte) BinaryChunk {
+	return BinaryChunk(fmt.Sprintf("%08b", code))
 }

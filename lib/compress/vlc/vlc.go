@@ -11,14 +11,14 @@ const chunkSize = 8
 
 // Encode encodes the input string to VLC
 // Where all the magic happens
-func Encode(str string) string {
+func Encode(str string) []byte {
 	text := prepareText(str)
 
 	binStr := EncodeToBinary(text)
 
 	chunks := splitByChunks(binStr, chunkSize)
 
-	return chunks.ToHex().ToString()
+	return chunks.Bytes()
 }
 
 // prepareText removes all upper case characters from the input string
