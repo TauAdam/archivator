@@ -122,5 +122,5 @@ func Decode(encodedText string) string {
 
 	tree := newEncodingTable().DecodingTree()
 
-	return tree.Decode(binString)
+	return restoreText(tree.Decode(binString))
 }
