@@ -1,6 +1,7 @@
 package vlc
 
 import (
+	"github.com/TauAdam/archivator/lib/compress/vlc/table"
 	"strings"
 	"unicode"
 )
@@ -11,8 +12,6 @@ type EncoderDecoder struct {
 func New() EncoderDecoder {
 	return EncoderDecoder{}
 }
-
-type encodingTable map[rune]string
 
 const chunkSize = 8
 
@@ -95,8 +94,8 @@ func encodeCharToBinary(char rune) string {
 	return res
 }
 
-func newEncodingTable() encodingTable {
-	return encodingTable{
+func newEncodingTable() table.EncodingTable {
+	return table.EncodingTable{
 		' ': "11",
 		't': "1001",
 		'n': "10000",
