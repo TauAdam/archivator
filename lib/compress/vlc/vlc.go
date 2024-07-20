@@ -89,12 +89,12 @@ func newEncodingTable() encodingTable {
 	}
 }
 
-func Decode(encodedText string) {
-	hexChunks := NewHexChunks(encodedText)
-
-	binChunks := hexChunks.ToBinary()
-
-	binString := binChunks.Join()
-
-	//	TODO: create decoding tree
-}
+//func Decode(encodedText string) {
+//	hexChunks := NewHexChunks(encodedText)
+//
+//	binChunks := hexChunks.ToBinary()
+//
+//	binString := binChunks.Join()
+//
+//	//	TODO: create decoding tree
+//}
