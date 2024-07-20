@@ -5,13 +5,20 @@ import (
 	"unicode"
 )
 
+type EncoderDecoder struct {
+}
+
+func New() EncoderDecoder {
+	return EncoderDecoder{}
+}
+
 type encodingTable map[rune]string
 
 const chunkSize = 8
 
 // Encode encodes the input string to VLC
 // Where all the magic happens
-func Encode(str string) []byte {
+func (_ EncoderDecoder) Encode(str string) []byte {
 	text := prepareText(str)
 
 	binStr := EncodeToBinary(text)
@@ -19,6 +26,16 @@ func Encode(str string) []byte {
 	chunks := splitByChunks(binStr, chunkSize)
 
 	return chunks.Bytes()
+}
+
+// Decode decodes the input bytes from VLC
+// "09 10 A7 50" -> "gopher"
+func (_ EncoderDecoder) Decode(encodedBytes []byte) string {
+	binString := NewBinChunks(encodedBytes).Join()
+
+	tree := newEncodingTable().DecodingTree()
+
+	return restoreText(tree.Decode(binString))
 }
 
 // prepareText removes all upper case characters from the input string
@@ -109,14 +126,4 @@ func newEncodingTable() encodingTable {
 		'x': "00000000001",
 		'z': "000000000000",
 	}
-}
-
-// Decode decodes the input bytes from VLC
-// "09 10 A7 50" -> "gopher"
-func Decode(encodedBytes []byte) string {
-	binString := NewBinChunks(encodedBytes).Join()
-
-	tree := newEncodingTable().DecodingTree()
-
-	return restoreText(tree.Decode(binString))
 }
