@@ -111,14 +111,10 @@ func newEncodingTable() encodingTable {
 	}
 }
 
-// Decode decodes the input string from VLC
+// Decode decodes the input bytes from VLC
 // "09 10 A7 50" -> "gopher"
-func Decode(encodedText string) string {
-	hexChunks := NewHexChunks(encodedText)
-
-	binChunks := hexChunks.ToBinary()
-
-	binString := binChunks.Join()
+func Decode(encodedBytes []byte) string {
+	binString := NewBinChunks(encodedBytes).Join()
 
 	tree := newEncodingTable().DecodingTree()
 

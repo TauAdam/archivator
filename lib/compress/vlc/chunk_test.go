@@ -73,121 +73,121 @@ func Test_splitByChunks(t *testing.T) {
 	}
 }
 
-func TestBinaryChunks_ToHex(t *testing.T) {
-	tests := []struct {
-		name string
-		c    BinaryChunks
-		want HexChunks
-	}{
-		{
-			name: "basic case",
-			c:    BinaryChunks{"00100000", "11010010"},
-			want: HexChunks{"20", "D2"},
-		},
-		{
-			name: "case with 4 chunks",
-			c:    BinaryChunks{"0010", "0000", "1101", "1001"},
-			want: HexChunks{"02", "00", "0D", "09"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.c.ToHex(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToHex() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewHexChunks(t *testing.T) {
-	tests := []struct {
-		name string
-		str  string
-		want HexChunks
-	}{
-		{
-			name: "basic case",
-			str:  "20 D2",
-			want: HexChunks{"20", "D2"},
-		},
-		{
-			name: "case with spaces",
-			str:  "20 D2 00 0D 09",
-			want: HexChunks{"20", "D2", "00", "0D", "09"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewHexChunks(tt.str); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewHexChunks() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestHexChunk_ToBinary(t *testing.T) {
-	tests := []struct {
-		name string
-		c    HexChunk
-		want BinaryChunk
-	}{
-		{
-			name: "basic case",
-			c:    HexChunk("20"),
-			want: BinaryChunk("00100000"),
-		},
-		{
-			name: "case with 0",
-			c:    HexChunk("00"),
-			want: BinaryChunk("00000000"),
-		},
-		{
-			name: "case with 9",
-			c:    HexChunk("09"),
-			want: BinaryChunk("00001001"),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.c.ToBinary(); got != tt.want {
-				t.Errorf("ToBinary() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestHexChunks_ToBinary(t *testing.T) {
-	tests := []struct {
-		name string
-		c    HexChunks
-		want BinaryChunks
-	}{
-		{
-			name: "basic case",
-			c:    HexChunks{"20", "D2"},
-			want: BinaryChunks{"00100000", "11010010"},
-		},
-		{name: "case with 0",
-			c:    HexChunks{"00", "00"},
-			want: BinaryChunks{"00000000", "00000000"},
-		},
-		{
-			name: "case with 9",
-			c:    HexChunks{"09", "09"},
-			want: BinaryChunks{"00001001", "00001001"},
-		}, {
-			name: "case with letters",
-			c:    HexChunks{"A1", "B2"},
-			want: BinaryChunks{"10100001", "10110010"},
-		}}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.c.ToBinary(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToBinary() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+//func TestBinaryChunks_ToHex(t *testing.T) {
+//	tests := []struct {
+//		name string
+//		c    BinaryChunks
+//		want HexChunks
+//	}{
+//		{
+//			name: "basic case",
+//			c:    BinaryChunks{"00100000", "11010010"},
+//			want: HexChunks{"20", "D2"},
+//		},
+//		{
+//			name: "case with 4 chunks",
+//			c:    BinaryChunks{"0010", "0000", "1101", "1001"},
+//			want: HexChunks{"02", "00", "0D", "09"},
+//		},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := tt.c.ToHex(); !reflect.DeepEqual(got, tt.want) {
+//				t.Errorf("ToHex() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}
+//
+//func TestNewHexChunks(t *testing.T) {
+//	tests := []struct {
+//		name string
+//		str  string
+//		want HexChunks
+//	}{
+//		{
+//			name: "basic case",
+//			str:  "20 D2",
+//			want: HexChunks{"20", "D2"},
+//		},
+//		{
+//			name: "case with spaces",
+//			str:  "20 D2 00 0D 09",
+//			want: HexChunks{"20", "D2", "00", "0D", "09"},
+//		},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := NewHexChunks(tt.str); !reflect.DeepEqual(got, tt.want) {
+//				t.Errorf("NewHexChunks() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}
+//
+//func TestHexChunk_ToBinary(t *testing.T) {
+//	tests := []struct {
+//		name string
+//		c    HexChunk
+//		want BinaryChunk
+//	}{
+//		{
+//			name: "basic case",
+//			c:    HexChunk("20"),
+//			want: BinaryChunk("00100000"),
+//		},
+//		{
+//			name: "case with 0",
+//			c:    HexChunk("00"),
+//			want: BinaryChunk("00000000"),
+//		},
+//		{
+//			name: "case with 9",
+//			c:    HexChunk("09"),
+//			want: BinaryChunk("00001001"),
+//		},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := tt.c.ToBinary(); got != tt.want {
+//				t.Errorf("ToBinary() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}
+//
+//func TestHexChunks_ToBinary(t *testing.T) {
+//	tests := []struct {
+//		name string
+//		c    HexChunks
+//		want BinaryChunks
+//	}{
+//		{
+//			name: "basic case",
+//			c:    HexChunks{"20", "D2"},
+//			want: BinaryChunks{"00100000", "11010010"},
+//		},
+//		{name: "case with 0",
+//			c:    HexChunks{"00", "00"},
+//			want: BinaryChunks{"00000000", "00000000"},
+//		},
+//		{
+//			name: "case with 9",
+//			c:    HexChunks{"09", "09"},
+//			want: BinaryChunks{"00001001", "00001001"},
+//		}, {
+//			name: "case with letters",
+//			c:    HexChunks{"A1", "B2"},
+//			want: BinaryChunks{"10100001", "10110010"},
+//		}}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := tt.c.ToBinary(); !reflect.DeepEqual(got, tt.want) {
+//				t.Errorf("ToBinary() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}
 
 func TestBinaryChunks_Join(t *testing.T) {
 	tests := []struct {
@@ -213,6 +213,40 @@ func TestBinaryChunks_Join(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.c.Join(); got != tt.want {
 				t.Errorf("Join() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewBinChunks(t *testing.T) {
+	tests := []struct {
+		name string
+		args []byte
+		want BinaryChunks
+	}{
+		{
+			name: "basic case",
+			args: []byte{20, 30, 70, 80},
+			want: BinaryChunks{"00010100", "00011110", "01000110", "01010000"},
+		},
+		{
+			name: "case with 0",
+			args: []byte{0, 0, 0, 0},
+			want: BinaryChunks{"00000000", "00000000", "00000000", "00000000"},
+		},
+		{name: "case with 9",
+			args: []byte{9, 9},
+			want: BinaryChunks{"00001001", "00001001"}},
+		{
+			name: "basic case",
+			args: []byte{161, 178},
+			want: BinaryChunks{"10100001", "10110010"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewBinChunks(tt.args); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewBinChunks() = %v, want %v", got, tt.want)
 			}
 		})
 	}
