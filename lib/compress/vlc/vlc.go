@@ -38,6 +38,28 @@ func prepareText(str string) string {
 	return buf.String()
 }
 
+// restoreText converts the input string to Uppercase
+// if the character is followed by '!'
+func restoreText(str string) string {
+	var buf strings.Builder
+
+	var isUpper bool
+	for _, char := range str {
+		if isUpper {
+			buf.WriteRune(unicode.ToUpper(char))
+			isUpper = false
+			continue
+		}
+		if char == '!' {
+			isUpper = true
+			continue
+		} else {
+			buf.WriteRune(char)
+		}
+	}
+	return buf.String()
+}
+
 // EncodeToBinary encodes the input string to binary without spaces
 func EncodeToBinary(str string) string {
 	var buf strings.Builder
@@ -89,12 +111,16 @@ func newEncodingTable() encodingTable {
 	}
 }
 
-//func Decode(encodedText string) {
-//	hexChunks := NewHexChunks(encodedText)
-//
-//	binChunks := hexChunks.ToBinary()
-//
-//	binString := binChunks.Join()
-//
-//	//	TODO: create decoding tree
-//}
+// Decode decodes the input string from VLC
+// "09 10 A7 50" -> "gopher"
+func Decode(encodedText string) string {
+	hexChunks := NewHexChunks(encodedText)
+
+	binChunks := hexChunks.ToBinary()
+
+	binString := binChunks.Join()
+
+	tree := newEncodingTable().DecodingTree()
+
+	return tree.Decode(binString)
+}

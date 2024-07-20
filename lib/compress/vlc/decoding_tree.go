@@ -1,5 +1,7 @@
 package vlc
 
+import "strings"
+
 type DecodingTree struct {
 	Value string
 	Left  *DecodingTree
@@ -27,6 +29,28 @@ func (t *DecodingTree) Add(code string, value rune) {
 	currentNode.Value = string(value)
 }
 
+func (t *DecodingTree) Decode(str string) string {
+	var buf strings.Builder
+
+	currentNode := t
+	for _, char := range str {
+		if currentNode.Value != "" {
+			buf.WriteString(currentNode.Value)
+			currentNode = t
+		}
+		switch char {
+		case '0':
+			currentNode = currentNode.Left
+		case '1':
+			currentNode = currentNode.Right
+		}
+	}
+	if currentNode.Value != "" {
+		buf.WriteString(currentNode.Value)
+		currentNode = t
+	}
+	return buf.String()
+}
 func (t encodingTable) DecodingTree() DecodingTree {
 	res := DecodingTree{}
 
