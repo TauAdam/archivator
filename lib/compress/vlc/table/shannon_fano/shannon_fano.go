@@ -50,7 +50,13 @@ func build(stats Stats) encodingTable {
 		return codes[i].Char < codes[j].Char
 	})
 	assignCodes(codes)
-	return nil
+
+	res := make(encodingTable)
+	for _, c := range codes {
+		res[c.Char] = c
+	}
+
+	return res
 }
 
 func assignCodes(codes []code) {
