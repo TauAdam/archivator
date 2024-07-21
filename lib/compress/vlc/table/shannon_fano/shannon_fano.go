@@ -57,8 +57,21 @@ func assignCodes(codes []code) {
 	if len(codes) <= 1 {
 		return
 	}
-	findBestPosition(codes)
 
+	pos := findBestPosition(codes)
+
+	for i := 0; i < len(codes); i++ {
+		// move to the left
+		codes[i].Bits <<= 1
+		codes[i].Size++
+
+		if i >= pos {
+			codes[i].Bits |= 1
+
+		}
+	}
+	assignCodes(codes[:pos])
+	assignCodes(codes[pos:])
 }
 
 func findBestPosition(codes []code) int {
