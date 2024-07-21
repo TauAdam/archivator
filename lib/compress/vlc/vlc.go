@@ -26,9 +26,7 @@ func (ed EncoderDecoder) Encode(str string) []byte {
 
 	binStr := EncodeToBinary(str, newTable)
 
-	chunks := splitByChunks(binStr, chunkSize)
-
-	return chunks.Bytes()
+	return buildEncodedFile(newTable, binStr)
 }
 
 func buildEncodedFile(tbl table.EncodingTable, data string) []byte {
@@ -58,14 +56,41 @@ func encodeNumbers(num int) []byte {
 	return res
 }
 
-// Decode decodes the input bytes from VLC
-// "09 10 A7 50" -> "gopher"
-func (_ EncoderDecoder) Decode(encodedBytes []byte) string {
-	binString := NewBinChunks(encodedBytes).Join()
+// Decode decodes the input bytes to string
+func (ed EncoderDecoder) Decode(encodedBytes []byte) string {
+	encodingTable, data := parseArchive(encodedBytes)
 
-	tree := newEncodingTable().DecodingTree()
+	return encodingTable.Decode(data)
+}
 
-	return restoreText(tree.Decode(binString))
+// parseArchive parses the input bytes to the encoding table and the encoded data
+func parseArchive(encodedData []byte) (table.EncodingTable, string) {
+	const (
+		encodedTableLen = 4
+		tableLen        = 4
+	)
+	tableSizeBinary, data := encodedData[:encodedTableLen], encodedData[encodedTableLen:]
+	dataSizeBinary, data := encodedData[:tableLen], encodedData[tableLen:]
+
+	tableSize := binary.BigEndian.Uint32(tableSizeBinary)
+	dataSize := binary.BigEndian.Uint32(dataSizeBinary)
+
+	tblBinary, data := data[:tableSize], data[tableSize:]
+
+	tbl := decodeGobTable(tblBinary)
+
+	body := NewBinChunks(data).Join()
+	return tbl, body[:dataSize]
+}
+
+// decodeGobTable decodes the input bytes to the encoding table
+func decodeGobTable(tblBinary []byte) table.EncodingTable {
+	var tbl table.EncodingTable
+	err := gob.NewDecoder(bytes.NewReader(tblBinary)).Decode(&tbl)
+	if err != nil {
+		log.Fatalf("deserialization error: %v", err)
+	}
+	return tbl
 }
 
 // EncodeToBinary encodes the input string to binary without spaces
