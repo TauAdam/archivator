@@ -12,8 +12,10 @@ type Generator struct {
 // NewTable returns a new encoding table based on the Shannon-Fano algorithm
 func (g Generator) NewTable(text string) table.EncodingTable {
 	statistics := newCharStat(text)
+	_ = statistics
 
 	//	TODO: encoding table generation
+	return nil
 }
 
 type Stats map[rune]int
@@ -47,18 +49,19 @@ func build(stats Stats) encodingTable {
 		}
 		return codes[i].Char < codes[j].Char
 	})
-	assignCodes()
+	//assignCodes()
+	return nil
 }
 
 func assignCodes(codes []code) {
 	if len(codes) <= 1 {
 		return
 	}
-	divideCodes(codes)
+	findBestPosition(codes)
 
 }
 
-func divideCodes(codes []code) int {
+func findBestPosition(codes []code) int {
 	sum := 0
 	for _, code := range codes {
 		sum += code.Quantity
@@ -73,7 +76,7 @@ func divideCodes(codes []code) int {
 
 		diff := abs(left - right)
 
-		if diff > prevDiff {
+		if diff >= prevDiff {
 			break
 		}
 		prevDiff = diff
