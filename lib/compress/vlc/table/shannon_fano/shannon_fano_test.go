@@ -105,29 +105,63 @@ func Test_findBestPosition(t *testing.T) {
 }
 
 func Test_assignCodes(t *testing.T) {
-	type args struct {
-		codes []code
-	}
 	tests := []struct {
 		name string
-		args args
+		args []code
 		want []code
 	}{
 		{name: "2 elements",
-			args: args{
-				codes: []code{
-					{Quantity: 2},
-					{Quantity: 2},
-				},
+			args: []code{
+				{Quantity: 2},
+				{Quantity: 2},
 			}, want: []code{
 				{Quantity: 2, Bits: 0, Size: 1},
 				{Quantity: 2, Bits: 1, Size: 1},
 			}},
+		{
+			name: "3 elements",
+			args: []code{
+				{Quantity: 2},
+				{Quantity: 1},
+				{Quantity: 1},
+			}, want: []code{
+				{Quantity: 2, Bits: 0, Size: 1},
+				{Quantity: 1, Bits: 2, Size: 2},
+				{Quantity: 1, Bits: 3, Size: 2},
+			},
+		}, {
+			name: "3 elements",
+			args: []code{
+				{Quantity: 1},
+				{Quantity: 1},
+				{Quantity: 1},
+			}, want: []code{
+				{Quantity: 1, Bits: 0, Size: 1},
+				{Quantity: 1, Bits: 2, Size: 2},
+				{Quantity: 1, Bits: 3, Size: 2},
+			},
+		},
+		{
+			name: "4 elements",
+			args: []code{
+				{Quantity: 1},
+				{Quantity: 3},
+				{Quantity: 2},
+				{Quantity: 1},
+			},
+			want: []code{
+				{Quantity: 1, Bits: 0, Size: 2}, // 00
+				{Quantity: 3, Bits: 1, Size: 2}, // 11
+				{Quantity: 2, Bits: 2, Size: 2}, // 10
+				{Quantity: 1, Bits: 3, Size: 2}, // 01
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if assignCodes(tt.args.codes); !reflect.DeepEqual(tt.args.codes, tt.want) {
-				t.Errorf("assignCodes() = %v, want %v", tt.args.codes, tt.want)
+			assignCodes(tt.args)
+			if !reflect.DeepEqual(tt.args, tt.want) {
+				t.Errorf("assignCodes() = %v, want %v", tt.args, tt.want)
 			}
 		})
 	}

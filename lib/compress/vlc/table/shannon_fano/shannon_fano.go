@@ -49,7 +49,7 @@ func build(stats Stats) encodingTable {
 		}
 		return codes[i].Char < codes[j].Char
 	})
-	//assignCodes()
+	assignCodes(codes)
 	return nil
 }
 
