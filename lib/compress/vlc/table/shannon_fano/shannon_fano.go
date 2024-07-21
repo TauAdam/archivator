@@ -1,6 +1,10 @@
 package shannon_fano
 
-import "github.com/TauAdam/archivator/lib/compress/vlc/table"
+import (
+	"github.com/TauAdam/archivator/lib/compress/vlc/table"
+	"math"
+	"sort"
+)
 
 type Generator struct {
 }
@@ -21,4 +25,67 @@ func newCharStat(text string) Stats {
 		res[char]++
 	}
 	return res
+}
+
+type code struct {
+	Char     rune
+	Quantity int
+	Bits     uint32
+	Size     int
+}
+type encodingTable map[rune]code
+
+func build(stats Stats) encodingTable {
+	codes := make([]code, 0, len(stats))
+
+	for char, quantity := range stats {
+		codes = append(codes, code{Char: char, Quantity: quantity})
+	}
+	sort.Slice(codes, func(i, j int) bool {
+		if codes[i].Quantity != codes[j].Quantity {
+			return codes[i].Quantity > codes[j].Quantity
+		}
+		return codes[i].Char < codes[j].Char
+	})
+	assignCodes()
+}
+
+func assignCodes(codes []code) {
+	if len(codes) <= 1 {
+		return
+	}
+	divideCodes(codes)
+
+}
+
+func divideCodes(codes []code) int {
+	sum := 0
+	for _, code := range codes {
+		sum += code.Quantity
+	}
+
+	left := 0
+	prevDiff := math.MaxInt
+	pos := 0
+	for i := 0; i < len(codes)-1; i++ {
+		left += codes[i].Quantity
+		right := sum - left
+
+		diff := abs(left - right)
+
+		if diff > prevDiff {
+			break
+		}
+		prevDiff = diff
+		pos = i + 1
+
+	}
+	return pos
+}
+
+func abs(i int) int {
+	if i < 0 {
+		return -i
+	}
+	return i
 }
