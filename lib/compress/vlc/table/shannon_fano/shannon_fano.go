@@ -1,9 +1,11 @@
 package shannon_fano
 
 import (
+	"fmt"
 	"github.com/TauAdam/archivator/lib/compress/vlc/table"
 	"math"
 	"sort"
+	"strings"
 )
 
 type Generator struct {
@@ -11,18 +13,16 @@ type Generator struct {
 
 // NewTable returns a new encoding table based on the Shannon-Fano algorithm
 func (g Generator) NewTable(text string) table.EncodingTable {
-	statistics := newCharStat(text)
-	_ = statistics
+	occurrences := newCharOccurrences(text)
 
-	//	TODO: encoding table generation
-	return nil
+	return build(occurrences).Export()
 }
 
-type Stats map[rune]int
+type Occurrences map[rune]int
 
-// newCharStat returns a map of character frequencies in the text
-func newCharStat(text string) Stats {
-	res := make(Stats)
+// newCharOccurrences returns a map of character frequencies in the text
+func newCharOccurrences(text string) Occurrences {
+	res := make(Occurrences)
 	for _, char := range text {
 		res[char]++
 	}
@@ -37,7 +37,25 @@ type code struct {
 }
 type encodingTable map[rune]code
 
-func build(stats Stats) encodingTable {
+// Export returns the encoding table as a map of runes to binary strings
+func (t encodingTable) Export() map[rune]string {
+	res := make(map[rune]string)
+
+	for key, value := range t {
+		bytesStr := fmt.Sprintf("%b", value.Bits)
+
+		// 11 -> 0011
+		if sizeDiff := value.Size - len(bytesStr); sizeDiff > 0 {
+			bytesStr = strings.Repeat("0", sizeDiff) + bytesStr
+		}
+
+		res[key] = bytesStr
+	}
+	return res
+}
+
+// build creates a new encoding table based on the character occurrences
+func build(stats Occurrences) encodingTable {
 	codes := make([]code, 0, len(stats))
 
 	for char, quantity := range stats {
@@ -59,6 +77,7 @@ func build(stats Stats) encodingTable {
 	return res
 }
 
+// assignCodes assigns binary codes to the characters based on their frequencies
 func assignCodes(codes []code) {
 	if len(codes) <= 1 {
 		return
@@ -80,6 +99,7 @@ func assignCodes(codes []code) {
 	assignCodes(codes[pos:])
 }
 
+// findBestPosition finds the best position to split the codes
 func findBestPosition(codes []code) int {
 	sum := 0
 	for _, code := range codes {
@@ -105,6 +125,7 @@ func findBestPosition(codes []code) int {
 	return pos
 }
 
+// abs returns module of the integer
 func abs(i int) int {
 	if i < 0 {
 		return -i

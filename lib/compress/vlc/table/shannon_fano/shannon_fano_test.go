@@ -209,7 +209,7 @@ func Test_build(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := build(newCharStat(tt.args)); !reflect.DeepEqual(got, tt.want) {
+			if got := build(newCharOccurrences(tt.args)); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("build() = %v, want %v", got, tt.want)
 			}
 		})
