@@ -4,6 +4,11 @@ import "strings"
 
 type EncodingTable map[rune]string
 
+func (t EncodingTable) Decode(str string) string {
+	tree := t.decodingTree()
+	return tree.Decode(str)
+}
+
 // Generator is an interface for encoding table generators
 type Generator interface {
 	NewTable(text string) EncodingTable
