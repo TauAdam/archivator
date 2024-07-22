@@ -51,11 +51,3 @@ func (t *DecodingTree) Decode(str string) string {
 	}
 	return buf.String()
 }
-func (t encodingTable) DecodingTree() DecodingTree {
-	res := DecodingTree{}
-
-	for char, code := range t {
-		res.Add(code, char)
-	}
-	return res
-}

@@ -13,8 +13,10 @@ type EncoderDecoder struct {
 	tableGenerator table.Generator
 }
 
-func New() EncoderDecoder {
-	return EncoderDecoder{}
+func New(tlbGen table.Generator) EncoderDecoder {
+	return EncoderDecoder{
+		tableGenerator: tlbGen,
+	}
 }
 
 const chunkSize = 8

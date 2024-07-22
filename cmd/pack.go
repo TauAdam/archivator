@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/TauAdam/archivator/lib/compress"
 	"github.com/TauAdam/archivator/lib/compress/vlc"
+	"github.com/TauAdam/archivator/lib/compress/vlc/table/shannon_fano"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
@@ -37,7 +38,7 @@ func pack(cmd *cobra.Command, args []string) {
 	algo := cmd.Flag("algorithm").Value.String()
 	switch algo {
 	case "vlc":
-		encoder = vlc.New()
+		encoder = vlc.New(shannon_fano.Generator{})
 	default:
 		cmd.PrintErr("unsupported algorithm")
 	}
