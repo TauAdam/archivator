@@ -30,12 +30,22 @@ go build
 
 
 ### Example
+
+#### Compress file using Shannon-Fano algorithm
 ```bash
-./archivator pack -a vlc Yazyk_Go.pdf 
+./archivator pack -a vlc Pride\ and\ Prejudice.txt
 ```
+#### Decompress file using Shannon-Fano algorithm
+```bash
+./archivator unpack -a vlc Pride\ and\ Prejudice.vlc
+```
+
+### Screenshots
 ![img.png](img.png)
 
-#### As you can see the size of the file has decreased.
+#### As you can see the size of the file has decreased 
+> Book file compressed and correctly decompressed back.
+Decoded file is the same as the original file.
 
 ## References
 - [Shannon-Fano algorithm](https://en.wikipedia.org/wiki/Shannon%E2%80%93Fano_coding)

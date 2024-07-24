@@ -66,23 +66,24 @@ func (ed EncoderDecoder) Decode(encodedBytes []byte) string {
 }
 
 // parseArchive parses the input bytes to the encoding table and the encoded data
-func parseArchive(encodedData []byte) (table.EncodingTable, string) {
+func parseArchive(data []byte) (table.EncodingTable, string) {
 	const (
-		encodedTableLen = 4
-		tableLen        = 4
+		tableSizeBytesCount = 4
+		dataSizeBytesCount  = 4
 	)
-	tableSizeBinary, data := encodedData[:encodedTableLen], encodedData[encodedTableLen:]
-	dataSizeBinary, data := encodedData[:tableLen], encodedData[tableLen:]
+
+	tableSizeBinary, data := data[:tableSizeBytesCount], data[tableSizeBytesCount:]
+	data = data[dataSizeBytesCount:]
 
 	tableSize := binary.BigEndian.Uint32(tableSizeBinary)
-	dataSize := binary.BigEndian.Uint32(dataSizeBinary)
 
 	tblBinary, data := data[:tableSize], data[tableSize:]
 
 	tbl := decodeGobTable(tblBinary)
 
 	body := NewBinChunks(data).Join()
-	return tbl, body[:dataSize]
+	//log.Printf("data size: %d, body size: %d", dataSize, len(body))
+	return tbl, body
 }
 
 // decodeGobTable decodes the input bytes to the encoding table
